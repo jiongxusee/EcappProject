@@ -22,7 +22,7 @@
 #include <process.c>
 #include <output.c>
 
-//Prototypes
+  //Prototypes
 void Handler_High(void);
 void ISR_High(void);
 void Handler_Low(void);
