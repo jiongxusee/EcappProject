@@ -56,11 +56,11 @@ void ISR_Low() {
 void main() {
 	ADCON0 = POTENTIOMETER_SELECT;
 	ADCON1 = 0x0B; // Use AN0 to AN3 as Analog Input, Internal VREF.
-	TRISA = 0bFF; // LCD E, LCD RS, Pot
-	TRISB = 0bC3; // LCD DATA, PB
-	TRISC = 0bC0; // 7SEG SL1-SL2, Bulb, LED, S4
-	TRISD = 0b00; // 7SEG DATA, Buzzer
-	TRISE = 0b00; // Not used.
+	TRISA = 0xFF; // LCD E, LCD RS, Pot
+	TRISB = 0xC3; // LCD DATA, PB
+	TRISC = 0xC0; // 7SEG SL1-SL2, Bulb, LED, S4
+	TRISD = 0x00; // 7SEG DATA, Buzzer
+	TRISE = 0x00; // Not used.
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
 	
 }
