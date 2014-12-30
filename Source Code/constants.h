@@ -13,3 +13,4 @@
 #define BUZZER PORTDbits.RC7
 
 //Constants
+#define PR2_VALUE 249 //Set PR2 = 249 for PWM period of 1ms

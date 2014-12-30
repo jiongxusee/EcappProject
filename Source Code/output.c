@@ -22,5 +22,19 @@
 //Prototypes
 void Display_Seven_Seg(unsigned int);
 void Display_LED(unsigned int);
+void Run_Lightbulb(unsigned int);
 
 //Variables
+unsigned int lightbulbPower; //Range: 0 to 250
+
+void Run_Lightbulb(lightbulbPower){
+	PR2 = PR2_VALUE;
+	
+	if(power > 0) {
+		CCPR1L = power; // 8 bits of 10bit used
+		CCP1CON = 0b00001111; // DC1B1 & DC1B0 = 0(Other 2 bits of duty cycle not used), PWM mode
+	}
+	else {
+		CCP1CON = 0; //Disable PWM if power = 0
+	}
+}
