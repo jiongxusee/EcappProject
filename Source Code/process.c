@@ -17,9 +17,13 @@
 */
 
 #include <p18f4520.h>
-#include <constant.h>
+#include "constants.h"
 
 //Prototypes
-int Calculate_Temperature_Set(unsigned int); //get AN0 voltage and calculate temperature
+//int Calculate_Temperature_Set(unsigned int); //get AN0 voltage and calculate temperature
 
 //Variables
+
+//int Calculate_Temperature_Set(unsigned int potValue) {
+//	return potValue / 10;
+//}

@@ -17,10 +17,10 @@
 */
 
 #include <p18f4520.h>
-#include <constant.h>
-#include <input.c>
-#include <process.c>
-#include <output.c>
+#include "constants.h"
+#include "input.c"
+#include "process.c"
+#include "output.c"
 
 //Prototypes
 void Handler_High(void);
@@ -63,5 +63,5 @@ void main() {
 	TRISE = 0x00; //Not used.
 	T2CON = 0b00000101; //Timer 2 On, Postscaler = 1:1, Prescaler = 1:4
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
-	
+
 }

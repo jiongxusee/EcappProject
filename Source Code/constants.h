@@ -1,4 +1,5 @@
 //Pin Configurations
+
 #define POTENTIOMETER_SELECT 0x01
 #define SEVEN_SEG_ONE PORTCbits.RC0
 #define SEVEN_SEG_TWO PORTCbits.RC1

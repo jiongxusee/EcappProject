@@ -17,9 +17,9 @@
 */
 
 #include <p18f4520.h>
-#include <constant.h>
+#include "constants.h"
 
 //Prototypes
-int Read_Potentiometer(void);
+//int Read_Potentiometer(void);
 
 //Variables
