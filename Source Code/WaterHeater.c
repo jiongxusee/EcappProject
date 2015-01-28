@@ -17,16 +17,15 @@
 */
 
 #include <p18f4520.h>
+#include <math.c>
 #include "constants.h"
 #include "input.c"
 #include "process.c"
 #include "output.c"
 
-//Prototypes
-void Handler_High(void);
-void ISR_High(void);
-void Handler_Low(void);
-void ISR_Low(void);
+//Variables
+int temperature;
+int power;
 
 #pragma code Handler_High = 0x08
 void Handler_High() {
@@ -63,5 +62,9 @@ void main() {
 	TRISE = 0x00; //Not used.
 	T2CON = 0b00000101; //Timer 2 On, Postscaler = 1:1, Prescaler = 1:4
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
+
+	while(1) {
+		//Insert main loop program.
+	}
 
 }

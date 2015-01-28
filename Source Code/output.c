@@ -19,12 +19,8 @@
 #include <p18f4520.h>
 #include "constants.h"
 
-//Prototypes
-//void Display_Seven_Seg(unsigned int);
-//void Display_LED(unsigned int);
-void Run_Lightbulb(unsigned char);
-
 //Variables
+
 
 void Run_Lightbulb(unsigned char lightbulbPower) { //lightbulbPower Range: 0 to 250
 	PR2 = PR2_VALUE;
