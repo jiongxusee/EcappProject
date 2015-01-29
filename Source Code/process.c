@@ -20,23 +20,23 @@
 #include "constants.h"
 
 //Variables
-extern int temperature; //Temperature in Celsius
-extern int power; //Power in percentage
+extern unsigned int temperature; //Temperature in Celsius
+extern unsigned int power; //Power in percentage
 
-void Increase_Temperature(int value) {
+void Increase_Temperature(unsigned int value) {
 	temperature = temperature + value;
 	if(temperature > TEMP_MAX) {
 		temperature = TEMP_MAX;
 	}
 }
-void Decrease_Temperature(int value) {
+void Decrease_Temperature(unsigned int value) {
 	temperature = temperature - value;
 	if(temperature < TEMP_MIN) {
 		temperature = TEMP_MIN;
 	}
 }
 
-int Convert_Temp_To_Power(int temp) {
+int Convert_Temp_To_Power(unsigned int temp) {
 	power = map(temp, TEMP_MIN, TEMP_MAX, POWER_MIN, POWER_MAX);
 	return power;
 }

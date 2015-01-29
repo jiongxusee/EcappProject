@@ -23,13 +23,18 @@
 
 
 void Run_Lightbulb(unsigned char lightbulbPower) { //lightbulbPower Range: 0 to 250
-	PR2 = PR2_VALUE;
 	
-	if(lightbulbPower > 0) {
+	if(lightbulbPower > 0) { 		
 		CCPR1L = lightbulbPower; // 8 bits of 10bit used
 		CCP1CON = 0b00001111; // DC1B1 & DC1B0 = 0(Other 2 bits of duty cycle not used), PWM mode
 	}
 	else {
 		CCP1CON = 0; //Disable PWM if power = 0
 	}
+}
+
+void Light_LED(unsigned char led) {
+	RED_LED = led & 0x01 ;
+	YELLOW_LED = (led >> 1) & 0x01  ;
+	GREEN_LED = (led >> 2) & 0x01;
 }

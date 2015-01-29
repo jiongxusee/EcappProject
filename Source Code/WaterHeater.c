@@ -17,15 +17,19 @@
 */
 
 #include <p18f4520.h>
-#include <math.c>
 #include "constants.h"
 #include "input.c"
 #include "process.c"
 #include "output.c"
 
 //Variables
-int temperature;
-int power;
+unsigned int temperature;
+unsigned int power;
+unsigned int powerChange;
+unsigned int i;
+unsigned int potValue;
+unsigned char AN[] = {0x01, 0x05};
+
 
 #pragma code Handler_High = 0x08
 void Handler_High() {
@@ -53,8 +57,12 @@ void ISR_Low() {
 }
 
 void main() {
-	ADCON0 = POTENTIOMETER_SELECT;
-	ADCON1 = 0x0B; //Use AN0 to AN3 as Analog Input, Internal VREF.
+	ADCON0 = AN[0];
+	ADCON1 = 0x0D; //Use AN0 and AN1 as Analog Input, Internal VREF.
+	ADCON2 = 0b00011011; //Left Justified, 6 TAD, Fosc/4
+	INTCON = 0b11110000;
+	INTCON2 = 0b11110100; //INT0 High Priority
+	INTCON3 = 0b00001000; //INT1 Low Priority, INT2 Disabled
 	TRISA = 0xFF; //LCD E, LCD RS, Pot
 	TRISB = 0xC3; //LCD DATA, PB
 	TRISC = 0xC0; //7SEG SL1-SL2, Bulb, LED, S4
@@ -62,9 +70,20 @@ void main() {
 	TRISE = 0x00; //Not used.
 	T2CON = 0b00000101; //Timer 2 On, Postscaler = 1:1, Prescaler = 1:4
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
-
+	PR2 = PR2_VALUE; //PR2 for PWM
+	
+	powerChange = 1;	
+	
 	while(1) {
-		//Insert main loop program.
+		potValue = Read_Potentiometer(AN[0]);
+		
+		
+
+		if(powerChange) {
+			Run_Lightbulb(power);
+			powerChange = 0;
+		}
+		Light_LED(power);
 	}
 
 }

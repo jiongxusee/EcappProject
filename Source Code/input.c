@@ -20,3 +20,12 @@
 #include "constants.h"
 
 //Variables
+
+int Read_Potentiometer(unsigned char channel) {
+	ADCON0 = channel;
+
+	ADCON0bits.GO = 1;
+	while(!ADCON0bits.GO);
+	
+	return ADRESH;
+}
