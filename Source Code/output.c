@@ -20,7 +20,9 @@
 #include "constants.h"
 
 //Variables
-
+extern unsigned char ones;
+extern unsigned char tens;
+extern unsigned char sevenSeg[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F3, 0x6F};
 
 void Run_Lightbulb(unsigned char lightbulbPower) { //lightbulbPower Range: 0 to 250
 	
@@ -34,7 +36,20 @@ void Run_Lightbulb(unsigned char lightbulbPower) { //lightbulbPower Range: 0 to 
 }
 
 void Light_LED(unsigned char led) {
-	RED_LED = led & 0x01 ;
-	YELLOW_LED = (led >> 1) & 0x01  ;
+	RED_LED = led & 0x01;
+	YELLOW_LED = (led >> 1) & 0x01;
 	GREEN_LED = (led >> 2) & 0x01;
+}
+
+void Light_SevenSeg(unsigned char n) {
+	ones = n % 10;
+	tens = n / 10;
+
+	SEVEN_SEG_TWO = 0;
+	SEVEN_SEG_ONE = 1;
+	SEVEN_SEG_DATA = sevenSeg[ones];
+	SEVEN_SEG_ONE = 0;
+	SEVEN_SEG_DATA = 0;
+	SEVEN_SEG_TWO = 1;
+	SEVEN_SEG_DATA = sevenSeg[tens];
 }

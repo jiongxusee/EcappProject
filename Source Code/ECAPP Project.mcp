@@ -45,9 +45,9 @@ file_003=no
 file_004=no
 file_005=no
 [FILE_INFO]
-file_000=input.c
-file_001=output.c
-file_002=WaterHeater.c
+file_000=output.c
+file_001=WaterHeater.c
+file_002=input.c
 file_003=process.c
 file_004=constants.h
 file_005=18f4520_g.lkr

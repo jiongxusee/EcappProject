@@ -21,6 +21,7 @@
 #define TEMP_MAX 40 //Max temperature in Celsius
 #define POWER_MIN 0 //Min power in percentage
 #define POWER_MAX 100 //Max power in percentage
+#define TEMP_STEP 1 //Temperature decrease or increase steps.
 
 //End Constant
 
@@ -31,12 +32,12 @@ void Handler_Low(void); //Interrupt Handler
 void ISR_Low(void); //ISR
 
 static int Read_Potentiometer(unsigned char channel); //Input
-static void Decrease_Temperature(unsigned int value); //Process
-static void Increase_Temperature(unsigned int value); //Process
+static int Decrease_Temperature(unsigned int value); //Process
+static int Increase_Temperature(unsigned int value); //Process
 static int Convert_Temp_To_Power(unsigned int temp); //Process
 static int map(int value, int inMin, int inMax, int outMin, int outMax); //Process
 static void Run_Lightbulb(unsigned char power); //Output
 static void Light_LED(unsigned char led); //Output Green, Yellow, Red
-//static int Read_Potentiometer(int channel);
+static void Light_SevenSeg(unsigned char); //Output
 
 //End Prototypes

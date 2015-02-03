@@ -23,12 +23,15 @@
 #include "output.c"
 
 //Variables
+unsigned char ones;
+unsigned char tens;
 unsigned int temperature;
 unsigned int power;
-unsigned int powerChange;
+unsigned int powerChange = 1;
 unsigned int i;
-unsigned int potValue;
-unsigned char AN[] = {0x01, 0x05};
+unsigned int waterFlow;
+unsigned char an[] = {0x01, 0x05};
+unsigned char sevenSeg[];
 
 
 #pragma code Handler_High = 0x08
@@ -42,6 +45,9 @@ void Handler_High() {
 #pragma interrupt ISR_High
 void ISR_High() {
 	//Insert High Priority interrupt code
+	if(INTCONbits.INT0IF) {
+		temperature = Increase_Temperature(TEMP_STEP);
+	}
 }
 
 #pragma code Handler_Low = 0x18
@@ -54,13 +60,16 @@ void Handler_Low() {
 #pragma interrupt ISR_Low
 void ISR_Low() {
 	//Insert Low Priority interrupt code
+	if(INTCON3bits.INT1IF) {
+		temperature = Decrease_Temperature(TEMP_STEP);
+	}
 }
 
 void main() {
-	ADCON0 = AN[0];
+	ADCON0 = an[0];
 	ADCON1 = 0x0D; //Use AN0 and AN1 as Analog Input, Internal VREF.
 	ADCON2 = 0b00011011; //Left Justified, 6 TAD, Fosc/4
-	INTCON = 0b11110000;
+	INTCON = 0b11110000; //Enable all interrupts
 	INTCON2 = 0b11110100; //INT0 High Priority
 	INTCON3 = 0b00001000; //INT1 Low Priority, INT2 Disabled
 	TRISA = 0xFF; //LCD E, LCD RS, Pot
@@ -72,18 +81,18 @@ void main() {
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
 	PR2 = PR2_VALUE; //PR2 for PWM
 	
-	powerChange = 1;	
-	
 	while(1) {
-		potValue = Read_Potentiometer(AN[0]);
 		
+		waterFlow = Read_Potentiometer(an[0]);
+		power = (waterFlow + map(temperature, TEMP_MIN, TEMP_MAX, 0, 256))/2;
 		
+		Light_SevenSeg(temperature);
 
-		if(powerChange) {
+//		if(powerChange) {
 			Run_Lightbulb(power);
 			powerChange = 0;
-		}
+//		}
 		Light_LED(power);
+	
 	}
-
 }

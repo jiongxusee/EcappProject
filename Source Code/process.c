@@ -23,17 +23,19 @@
 extern unsigned int temperature; //Temperature in Celsius
 extern unsigned int power; //Power in percentage
 
-void Increase_Temperature(unsigned int value) {
+int Increase_Temperature(unsigned int value) {
 	temperature = temperature + value;
 	if(temperature > TEMP_MAX) {
 		temperature = TEMP_MAX;
 	}
+	return temperature;
 }
-void Decrease_Temperature(unsigned int value) {
+int Decrease_Temperature(unsigned int value) {
 	temperature = temperature - value;
 	if(temperature < TEMP_MIN) {
 		temperature = TEMP_MIN;
 	}
+	return temperature;
 }
 
 int Convert_Temp_To_Power(unsigned int temp) {
