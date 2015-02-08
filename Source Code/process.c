@@ -21,28 +21,22 @@
 
 //Variables
 extern unsigned int temperature; //Temperature in Celsius
-extern unsigned int power; //Power in percentage
 
-int Increase_Temperature(unsigned int value) {
-	temperature = temperature + value;
-	if(temperature > TEMP_MAX) {
-		temperature = TEMP_MAX;
+int Increase_Temperature(unsigned int value) { //Increase Temperature routine
+	temperature = temperature + value; //Increase temperature
+	if(temperature > TEMP_MAX) { //Check for temperature over max
+		temperature = TEMP_MAX; //Set temperature to max
 	}
-	return temperature;
+	return temperature; //Self explanatory
 }
-int Decrease_Temperature(unsigned int value) {
-	temperature = temperature - value;
-	if(temperature < TEMP_MIN) {
-		temperature = TEMP_MIN;
+int Decrease_Temperature(unsigned int value) { //Decrease Temperature routine
+	temperature = temperature - value; //Decrease temperature
+	if(temperature < TEMP_MIN) { //Check for temperature under max
+		temperature = TEMP_MIN; //Set temperature to min
 	}
-	return temperature;
+	return temperature;//Self explanatory
 }
 
-int Convert_Temp_To_Power(unsigned int temp) {
-	power = map(temp, TEMP_MIN, TEMP_MAX, POWER_MIN, POWER_MAX);
-	return power;
-}
-
-int map(int value, int inMin, int inMax, int outMin, int outMax) {
-	return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+int map(int value, int inMin, int inMax, int outMin, int outMax) { //Remap a value from a range to another range
+	return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin; //Self explanatory
 }

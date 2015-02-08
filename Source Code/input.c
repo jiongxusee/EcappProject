@@ -21,11 +21,11 @@
 
 //Variables
 
-int Read_Potentiometer(unsigned char channel) {
-	ADCON0 = channel;
+int Read_Potentiometer(unsigned char channel) { //Subroutine to read potentiometer
+	ADCON0 = channel; //Channel select
 
-	ADCON0bits.GO = 1;
-	while(!ADCON0bits.GO);
+	ADCON0bits.GO = 1; //Start to convert
+	while(!ADCON0bits.GO); //Check if conversion done
 	
-	return ADRESH;
+	return ADRESH; //Return converted value
 }
