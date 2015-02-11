@@ -10,24 +10,28 @@
 #define RED_LED PORTCbits.RC3
 #define YELLOW_LED PORTCbits.RC4
 #define GREEN_LED PORTCbits.RC5
-#define SW1 PORTCbits.RC6
-#define BUZZER PORTDbits.RC7
+
+/* Potentiometer - AN0 (RA0)
+** Up Button - INT0 (RB0)
+** Down Button - INT1 (RB1)
+** Light Bulb - CCP1 (RC2)
+** Buzzer - CCP2 (RC1)
+*/
 
 //End Pin Configurations
 
 //Constants
 #define TMR0_RESET 156 //TMR0L Value
 #define PR2_VALUE 249 //Set PR2 = 249 for PWM period of 1ms
-#define TEMP_MIN 20 //Min temperature in Celsius
+#define TEMP_MIN 25 //Min temperature in Celsius
 #define TEMP_MAX 50 //Max temperature in Celsius
-#define POWER_MIN 0 //Min power in percentage
-#define POWER_MAX 250 //Max power in percentage
+#define POWER_MIN 1 //Min power in 8 bits
+#define POWER_MAX 249 //Max power in 8 bits
 #define TEMP_STEP 1 //Temperature decrease or increase steps.
 #define TEMP_INIT 30 //Initial Temperature
-#define ROOM_TEMP 25 //Room Temperature
 #define DEBOUNCE_TIME_MS 10 //Time for debounce check
 #define BUZZER_RING_TIME_MS 10 //Buzzer ringing time
-
+#define RED_LED_BLINK_RATE_MS 20 //Time for red LED blink rate
 //End Constant
 
 //Prototypes
@@ -39,13 +43,11 @@ void ISR_Low(void); //ISR
 static int Read_Potentiometer(unsigned char channel); //Input
 static int Decrease_Temperature(unsigned int value); //Process
 static int Increase_Temperature(unsigned int value); //Process
-static int map(int value, int inMin, int inMax, int outMin, int outMax); //Process
 static void Run_Lightbulb(unsigned char power); //Output
 static void Run_Buzzer(unsigned char status); //Output
 static void Light_LED(unsigned char led); //Output Green, Yellow, Red
 static void Light_SevenSeg(unsigned char); //Output
 static void Init_LCD(void); //output
-static void LCD_Ctr_4bit(char);
-static void LCD_Data_4bit(char);
-
+static void W_ctr_4bit(char x);
+static void W_data_4bit(char x);
 //End Prototypes

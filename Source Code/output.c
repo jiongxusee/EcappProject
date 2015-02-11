@@ -18,12 +18,13 @@
 
 #include <p18f4520.h>
 #include "constants.h"
+#include <delays.h>
 
 //Variables
 extern unsigned char ones; //7 Seg Digit in one's place
 extern unsigned char tens; //7 Seg Digit in ten's place
 extern unsigned char sevenSeg[]; //7 Seg lookup (Declare and initialised)
-extern char lcdTemp; //Store upper nibble of LCD message
+extern char LCD_TEMP;
 
 void Run_Buzzer(unsigned char status) { //Run Buzzer routine
 	if(status) { //If status is on
@@ -36,13 +37,8 @@ void Run_Buzzer(unsigned char status) { //Run Buzzer routine
 }
 
 void Run_Lightbulb(unsigned char lightbulbPower) { //lightbulbPower Range: 0 to 250
-	if(lightbulbPower > 0) {
 		CCPR1L = lightbulbPower; // variable duty cycle, 8 bits of 10bit used.
 		CCP1CON = 0b00001111; // DC1B1 & DC1B0 = 0(Other 2 bits of duty cycle not used), PWM mode
-	}
-	else {
-		CCP1CON = 0; //Disable PWM if power = 0
-	}
 }
 
 void Light_LED(unsigned char led) { //Light LEDs, unused, just in case
@@ -65,43 +61,60 @@ void Light_SevenSeg(unsigned char n) { //Light seven segment
 	}
 }
 
-void Init_LCD(){
-	LCD_Ctr_4bit(0x03);
-	LCD_Ctr_4bit(0x02);
-	LCD_Ctr_4bit(0b00101000);
- 	LCD_Ctr_4bit(0b00001100);
-	LCD_Ctr_4bit(0b00000110);
-	LCD_Ctr_4bit(0b00000001);
+void Init_LCD(){				/* LCD display initialization */
+// Special Sequence a) to d) required for 4-bit interface 
+	Delay1KTCYx(15);			//   a)	15ms LCD power-up delay
+	W_ctr_4bit(0x03);			//   b)	Function Set (DB4-DB7: 8-bit interface)
+	Delay1KTCYx(5);			//   c)	5ms delay
+	W_ctr_4bit(0x02);			//   d) Function Set (DB4-DB7: 4-bit interface)    
+	W_ctr_4bit(0b00101000);		// Function Set - 4-bit, 2 lines, 5X7
+ 	W_ctr_4bit(0b00001100);		// Display on, cursor off
+	W_ctr_4bit(0b00000110);		// Entry mode - inc addr, no shift
+	W_ctr_4bit(0b00000001);		// Clear display & home position
 }
  
-void LCD_Ctr_4bit(char x){ 
-//	LCD_RW = 0;
-	LCD_RS = 0;
-	lcdTemp = x;
-	lcdTemp >>= 4;
-	LCD_E = 1;
-	LCD_DATA = lcdTemp;
-	LCD_E = 0;
-	lcdTemp = x;
-	lcdTemp &= 0x0f;
-	LCD_E = 1;
-	LCD_DATA = lcdTemp;
-	LCD_E = 0;
+void W_ctr_4bit(char x){ 
+/* Write control word in term of 4-bit at a time to LCD */
+//	LCD_RW	= 0;				// Logic ‘0’
+	LCD_RS	= 0;				// Logic ‘0’
+	LCD_TEMP 	= x;				// Store control word
+	LCD_TEMP	>>= 2;				// send upper nibble of control word
+	LCD_TEMP &= 0x3c;
+	LCD_E	= 1;				// Logic ‘1’
+	LCD_DATA 	= LCD_TEMP;
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_E	= 0;				// Logic ‘0’
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_TEMP	= x;				// Store control word
+	LCD_TEMP <<= 2;
+	LCD_TEMP	&= 0x3c;			// Send lower nibble of control word
+	LCD_E	= 1;				// Logic ‘1’
+	LCD_DATA 	= LCD_TEMP;
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_E	= 0;				// Logic 0’
+	Delay1KTCYx(1);				// 1ms delay
 }
 
-void LCD_Data_4bit(char x){ 
-//	LCD_RW	 = 0;
-	LCD_RS	 = 1;
-	lcdTemp = x;
-	lcdTemp >>= 4;
-	LCD_E = 1;
-	LCD_DATA = lcdTemp;
-	LCD_E = 0;
-	lcdTemp = x;
-	lcdTemp &= 0x0f;
-	LCD_E = 1;
-	LCD_DATA = lcdTemp;
-	LCD_E = 0;
+void W_data_4bit(char x){ 
+/* Write text data in term of 4-bit at a time to LCD */
+//	LCD_RW	 = 0;				// Logic ‘0’
+	LCD_RS	 = 1;				// Logic ‘1’
+	LCD_TEMP	 = x;				// Store text data
+	LCD_TEMP  >>= 2;				// Send upper nibble of text data
+	LCD_TEMP &= 0x3c;
+	LCD_E	 = 1;				// Logic ‘1’
+	LCD_DATA = LCD_TEMP;
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_E	 = 0;				// Logic ‘0’
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_TEMP	 = x;				// Store text data
+	LCD_TEMP <<= 2;
+	LCD_TEMP &= 0x0f;			// Send lower nibble of text data
+	LCD_E	 = 1;				// Logic ‘1’
+	LCD_DATA = LCD_TEMP;
+	Delay1KTCYx(1);				// 1ms delay
+	LCD_E	 = 0;				// Logic ‘0’
+	Delay1KTCYx(1);				// 1ms delay
 }
 
  

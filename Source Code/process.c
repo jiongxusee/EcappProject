@@ -36,7 +36,3 @@ int Decrease_Temperature(unsigned int value) { //Decrease Temperature routine
 	}
 	return temperature;//Self explanatory
 }
-
-int map(int value, int inMin, int inMax, int outMin, int outMax) { //Remap a value from a range to another range
-	return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin; //Self explanatory
-}

@@ -24,11 +24,12 @@
 
 //Variables
 unsigned int upSwitchTime; //Time for switch debounce
-unsigned int upSwitchFlag; //Flag for switch debounce
+unsigned char upSwitchFlag; //Flag for switch debounce
 unsigned int downSwitchTime; //Time for switch debounce
-unsigned int downSwitchFlag; //Flag for switch debouce
+unsigned char downSwitchFlag; //Flag for switch debounce
 unsigned int buzzerOffTime; //Time to turn off buzzer
-unsigned int buzzerFlag; //Flag to turn off buzzer
+unsigned char buzzerFlag; //Flag to turn off buzzer
+unsigned int redLEDTime; //Time to toggle red LED
 unsigned int subcount = 0; //Self explanatory
 unsigned int temperature = TEMP_INIT; //Set initial temperature
 unsigned int power; //Power for PWM of heating element
@@ -40,6 +41,7 @@ unsigned char an[] = {0x01, 0x05}; //ADC channel lookup
 unsigned char MESS[] = "Good Day"; //LCD message
 unsigned char sevenSeg[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F}; //7 Segment lookup
 char lcdTemp; //To store upper nibble of lcd text
+char LCD_TEMP;
 
 #pragma code Handler_High = 0x08 //Memory address for High priority ISR
 void Handler_High() {
@@ -88,7 +90,7 @@ void ISR_Low() {
 	}
 	if(INTCONbits.TMR0IF) { //Timer Interrupt every 0.1ms
 		TMR0L = TMR0_RESET; //Refill timer 0
-		PORTEbits.RE0 = ~PORTEbits.RE0; //RE0 for measuring frequency.
+		PORTEbits.RE0 = 1; //RE0 for measuring frequency.
 		subcount++; //subcount every 0.1ms
 		
 		/* Implementation of a task-scheduling method.
@@ -107,23 +109,32 @@ void ISR_Low() {
 		** to be done, saving instruction cycles 
 		*/
 				
-
-
 		if ((subcount % 10) == 0) { //Repeat every 1ms
 			waterFlow = Read_Potentiometer(an[0]); //Read ADC
-			power = (waterFlow + map(temperature, TEMP_MAX, TEMP_MIN, 0, 256))/2; //remap range of values and average
-			if(waterFlow > 0xF0 || temperature < ROOM_TEMP) { //If no waterflow or water below room temperature
-				power = 0; //Turn off heating element
-				YELLOW_LED = 0; //Turn off waterflow indicator
-			}
-			else {
-				YELLOW_LED = 1; //Leave waterflow indicator on
-			}
+			power = (waterFlow * (temperature - TEMP_MIN))/(TEMP_MAX - TEMP_MIN); //Get power from temperature and waterFlow
 			Light_SevenSeg(temperature); //Light 7 segment with temperature
 			if(power > POWER_MAX){ //If power greater than max
 				power = POWER_MAX; //Set power = max
 			}
-			Run_Lightbulb(power); //Run PWM
+			else if(power < POWER_MIN){ //If power smaller than min
+				power = POWER_MIN; //Set power = min
+			}
+			Run_Lightbulb(POWER_MAX-power); //Run PWM
+		}
+
+		if (waterFlow == 0x00) { //If no water flow
+			YELLOW_LED = 0; //Turn off Water Flow Indicator
+		}
+		else {
+			YELLOW_LED = 1; //Otherwise turn on.
+		}
+			
+		if(temperature == TEMP_MAX) {
+			RED_LED = 1;
+			redLEDTime = subcount + (RED_LED_BLINK_RATE_MS * 10);
+		}
+		else {
+			RED_LED = 0;
 		}
 		if (subcount == upSwitchTime && upSwitchFlag) { //Check task undone
 			temperature = Increase_Temperature(TEMP_STEP); //Do task
@@ -139,7 +150,7 @@ void ISR_Low() {
 		}
 		
 		INTCONbits.TMR0IF = 0; //Clear interrupt flag
-		PORTEbits.RE0 = ~PORTEbits.RE0; //RE0 for measuring frequency.
+		PORTEbits.RE0 = 0; //RE0 for measuring frequency.
 	}
 	
 }
@@ -151,10 +162,14 @@ void main() {
 	TRISC = 0xC0; //7SEG SL1-SL2, Bulb, LED, S4
 	TRISD = 0x00; //7SEG DATA, Buzzer
 	TRISE = 0x00; //Not used.
-	
+	PORTA = 0;
+	PORTB = 0;
+	PORTC = 0;
+	PORTD = 0;
+	PORTE = 0;
 	ADCON0 = an[0]; //Select ADC Channel
 	ADCON1 = 0x0D; //Use AN0 and AN1 as Analog Input, Internal VREF.
-	ADCON2 = 0b00011011; //Left Justified, 6 TAD, Fosc/4
+	ADCON2 = 0b00111011; //Left Justified, 20 TAD, Fosc/4
 	RCONbits.IPEN = 1; //Enable Interrupt Priorities
 	INTCON = 0b00110000; //Enable interrupts, temporary disable interrupts
 	INTCON2 = 0b11110000; //INT0 High Priority, TMR0 Low Priority
@@ -165,14 +180,10 @@ void main() {
 	T2CON = 0b00000101; //Timer 2 On, Postscaler = 1:1, Prescaler = 1:4
 	PR2 = PR2_VALUE; //PR2 for PWM
 	TMR0L = TMR0_RESET; //Fill timer0
-	
+//	Init_LCD();
 	INTCONbits.GIEH = 1; //Enable interrupts
 	INTCONbits.GIEL = 1; //Enable interrupts
 	while(1) {
 		GREEN_LED = 1; //Turn on green LED
-
-//		for(i = 0; i < MESS[i]; i++){
-//			LCD_Data_4bit(MESS[i]);
-//		}
 	}
 }

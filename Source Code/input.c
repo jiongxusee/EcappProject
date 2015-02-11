@@ -19,8 +19,6 @@
 #include <p18f4520.h>
 #include "constants.h"
 
-//Variables
-
 int Read_Potentiometer(unsigned char channel) { //Subroutine to read potentiometer
 	ADCON0 = channel; //Channel select
 
